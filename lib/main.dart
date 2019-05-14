@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:flutter_html_view/flutter_html_view.dart';
-
-import 'package:xml/xml.dart';
 
 import 'api.dart';
 import 'lectionary_entry.dart';
+import 'lectionary_entry_route.dart';
 
 void main() => runApp(MyApp());
 
@@ -78,17 +75,17 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     var listView = ListView(
-      children: _lectionaryData.map((LectionaryEntry lectionaryDate) {
+      children: _lectionaryData.map((LectionaryEntry lectionaryEntry) {
         return InkWell(
           highlightColor: Theme.of(context).highlightColor,
           splashColor: Theme.of(context).highlightColor,
           onTap: () {
-            _onTap(lectionaryDate);
+            _onTap(lectionaryEntry);
           },
           child: Padding(
             padding: EdgeInsets.all(8.0),
             child: Text(
-              lectionaryDate.date,
+              lectionaryEntry.date,
               style: Theme.of(context).textTheme.headline,
             ),
           ),
@@ -99,7 +96,11 @@ class _MyHomePageState extends State<MyHomePage> {
     return listView;
   }
 
-  void _onTap(LectionaryEntry lectionaryDate) {
-    print("Tapped " + lectionaryDate.date);
+  void _onTap(LectionaryEntry lectionaryEntry) {
+    print("Tapped " + lectionaryEntry.date);
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => LectionaryEntryRoute(entry: lectionaryEntry)),
+    );
   }
 }
