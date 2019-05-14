@@ -59,7 +59,9 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: _buildList(),
+      body: SafeArea(
+        child: _buildList(),
+      ),
     );
   }
 
@@ -83,7 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
             _onTap(lectionaryEntry);
           },
           child: Padding(
-            padding: EdgeInsets.all(8.0),
+            padding: EdgeInsets.all(16.0),
             child: Text(
               lectionaryEntry.date,
               style: Theme.of(context).textTheme.headline,
@@ -100,7 +102,8 @@ class _MyHomePageState extends State<MyHomePage> {
     print("Tapped " + lectionaryEntry.date);
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => LectionaryEntryRoute(entry: lectionaryEntry)),
+      MaterialPageRoute(
+          builder: (context) => LectionaryEntryRoute(entry: lectionaryEntry)),
     );
   }
 }

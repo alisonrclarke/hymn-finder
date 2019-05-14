@@ -16,8 +16,10 @@ class LectionaryEntryRoute extends StatelessWidget {
       appBar: AppBar(
         title: Text(entry.date),
       ),
-      body: SingleChildScrollView(
-        child: HtmlView(data: entry.htmlInfo),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: HtmlView(data: entry.htmlInfo),
+        ),
       ),
     );
   }
