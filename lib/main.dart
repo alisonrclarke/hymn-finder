@@ -1,4 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:flutter_html_view/flutter_html_view.dart';
+
+import 'package:xml/xml.dart';
+
+import 'api.dart';
+import 'lectionary_entry.dart';
 
 void main() => runApp(MyApp());
 
@@ -31,15 +38,68 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  List<LectionaryEntry> _lectionaryData;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDates();
+  }
+
+  Future<void> _loadDates() async {
+    final api = Api();
+    final dates = await api.getLectionaryEntries();
+    if (dates != null) {
+      setState(() {
+        _lectionaryData = dates;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(widget.title),
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+      body: _buildList(),
+    );
+  }
+
+  Widget _buildList() {
+    if (_lectionaryData == null) {
+      return Center(
+        child: Container(
+          height: 180.0,
+          width: 180.0,
+          child: CircularProgressIndicator(),
         ),
-        body: Center(
-          child:
-              Text('Hello World', style: Theme.of(context).textTheme.headline),
-        ));
+      );
+    }
+
+    var listView = ListView(
+      children: _lectionaryData.map((LectionaryEntry lectionaryDate) {
+        return InkWell(
+          highlightColor: Theme.of(context).highlightColor,
+          splashColor: Theme.of(context).highlightColor,
+          onTap: () {
+            _onTap(lectionaryDate);
+          },
+          child: Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text(
+              lectionaryDate.date,
+              style: Theme.of(context).textTheme.headline,
+            ),
+          ),
+        );
+      }).toList(),
+    );
+
+    return listView;
+  }
+
+  void _onTap(LectionaryEntry lectionaryDate) {
+    print("Tapped " + lectionaryDate.date);
   }
 }
