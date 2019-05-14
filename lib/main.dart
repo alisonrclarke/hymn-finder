@@ -36,6 +36,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<LectionaryEntry> _lectionaryData;
+  bool _isError = false;
 
   @override
   void initState() {
@@ -49,6 +50,12 @@ class _MyHomePageState extends State<MyHomePage> {
     if (dates != null) {
       setState(() {
         _lectionaryData = dates;
+      });
+    } else {
+      displayError(
+          "Unable to retrieve lectionary entries.", "Please try again later.");
+      setState(() {
+        _isError = true;
       });
     }
   }
@@ -67,13 +74,27 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget _buildList() {
     if (_lectionaryData == null) {
-      return Center(
-        child: Container(
-          height: 180.0,
-          width: 180.0,
-          child: CircularProgressIndicator(),
-        ),
-      );
+      if (_isError) {
+        return Center(
+          child: RaisedButton(
+            onPressed: () {
+              setState(() {
+                _isError = false;
+              });
+              _loadDates();
+            },
+            child: Text("Retry"),
+          ),
+        );
+      } else {
+        return Center(
+          child: Container(
+            height: 180.0,
+            width: 180.0,
+            child: CircularProgressIndicator(),
+          ),
+        );
+      }
     }
 
     var listView = ListView(
@@ -103,6 +124,26 @@ class _MyHomePageState extends State<MyHomePage> {
       context,
       MaterialPageRoute(
           builder: (context) => LectionaryEntryRoute(entry: lectionaryEntry)),
+    );
+  }
+
+  Future<void> displayError(String errorTitle, String errorDetail) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(errorTitle),
+          content: Text(errorDetail),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
