@@ -1,10 +1,8 @@
-
 import 'dart:async';
 import 'dart:convert' show utf8;
 import 'dart:io';
 import 'package:xml/xml.dart';
 import 'lectionary_entry.dart';
-
 
 class Api {
   /// We use the `dart:io` HttpClient. More details: https://flutter.io/networking/
@@ -21,7 +19,7 @@ class Api {
   ///
   /// Returns a list of AtomFeed items. Returns null on error.
   Future<List<LectionaryEntry>> getLectionaryEntries() async {
-    final uri = Uri.http(_url, '/', { 'cat' : '264', 'feed' : 'atom'});
+    final uri = Uri.http(_url, '/', {'cat': '264', 'feed': 'atom'});
     final entries = await _getAtomFeed(uri);
     if (entries == null || entries.isEmpty) {
       print('Error retrieving data from StF.');
@@ -45,12 +43,28 @@ class Api {
       final responseBody = await httpResponse.transform(utf8.decoder).join();
       //
       final document = parse(responseBody);
-      return document.findAllElements('entry').map((element) {
-        return LectionaryEntry(element);
-      }).toList();
+      return _getLectionaryEntries(document.findAllElements('entry'));
     } on Exception catch (e) {
       print('$e');
       return null;
+    }
+  }
+
+  List<LectionaryEntry> _getLectionaryEntries(Iterable<XmlElement> elements) {
+    List<LectionaryEntry> entries = List<LectionaryEntry>();
+    for (XmlElement element in elements) {
+      LectionaryEntry entry;
+      try {
+        entry = LectionaryEntry(element);
+        entries.add(entry);
+      } on Exception catch (e) {
+        print('$e');
+      }
+    }
+    if (entries.isEmpty) {
+      return null;
+    } else {
+      return entries;
     }
   }
 }
