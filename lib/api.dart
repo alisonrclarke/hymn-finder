@@ -1,6 +1,6 @@
 
 import 'dart:async';
-import 'dart:convert' show json, utf8;
+import 'dart:convert' show utf8;
 import 'dart:io';
 import 'package:xml/xml.dart';
 import 'lectionary_entry.dart';

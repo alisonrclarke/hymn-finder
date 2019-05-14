@@ -5,6 +5,7 @@ import 'lectionary_entry.dart';
 class LectionaryEntryRoute extends StatelessWidget {
   final LectionaryEntry entry;
 
+  /// Displays a LectionaryEntry and its info
   const LectionaryEntryRoute({
     Key key,
     @required this.entry,

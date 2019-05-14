@@ -12,7 +12,6 @@ class LectionaryEntry {
     try {
       this.date = element.findElements('title').first.text;
       this.htmlInfo = element.findElements('summary').first.text;
-      print(htmlInfo);
     } on Exception catch (e) {
       print('$e');
     }

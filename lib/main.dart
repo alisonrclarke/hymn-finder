@@ -99,7 +99,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _onTap(LectionaryEntry lectionaryEntry) {
-    print("Tapped " + lectionaryEntry.date);
     Navigator.push(
       context,
       MaterialPageRoute(
