@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert' show utf8;
 import 'dart:io';
 import 'package:xml/xml.dart';
+import 'package:meta/meta.dart';
 import 'lectionary_entry.dart';
 
 class Api {
@@ -20,7 +21,8 @@ class Api {
   /// Returns a list of AtomFeed items. Returns null on error.
   Future<List<LectionaryEntry>> getLectionaryEntries() async {
     final uri = Uri.http(_url, '/', {'cat': '264', 'feed': 'atom'});
-    final entries = await _getAtomFeed(uri);
+    final atomFeedString = await getAtomFeed(uri);
+    final entries = parseXml(atomFeedString);
     if (entries == null || entries.isEmpty) {
       print('Error retrieving data from StF.');
       return null;
@@ -28,10 +30,11 @@ class Api {
     return entries;
   }
 
-  /// Fetches and decodes an Atom feed represented as a Dart [Map].
+  /// Fetches and decodes an Atom feed
   ///
-  /// Returns null if the API server is down, or the response is not JSON.
-  Future<List<LectionaryEntry>> _getAtomFeed(Uri uri) async {
+  /// Returns null if the API server is down
+  @visibleForTesting
+  Future<String> getAtomFeed(Uri uri) async {
     try {
       final httpRequest = await _httpClient.getUrl(uri);
       final httpResponse = await httpRequest.close();
@@ -41,17 +44,24 @@ class Api {
       // The response is sent as a Stream of bytes that we need to convert to a
       // `String`.
       final responseBody = await httpResponse.transform(utf8.decoder).join();
-      //
-      final document = parse(responseBody);
-      return _getLectionaryEntries(document.findAllElements('entry'));
+      return responseBody;
     } on Exception catch (e) {
       print('$e');
       return null;
     }
   }
 
-  List<LectionaryEntry> _getLectionaryEntries(Iterable<XmlElement> elements) {
+  @visibleForTesting
+  List<LectionaryEntry> parseXml(String responseBody) {
+    final document = parse(responseBody);
+    final elements = document.findAllElements('entry');
+    return parseXmlElements(elements);
+  }
+
+  @visibleForTesting
+  List<LectionaryEntry> parseXmlElements(List<XmlElement> elements) {
     List<LectionaryEntry> entries = List<LectionaryEntry>();
+
     for (XmlElement element in elements) {
       LectionaryEntry entry;
       try {
