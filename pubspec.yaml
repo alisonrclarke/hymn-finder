@@ -29,6 +29,8 @@ dependencies:
   xml: ^3.3.0
 
 dev_dependencies:
+  test: ^1.5.0
+  mockito: ^4.1.0
   flutter_test:
     sdk: flutter
 
